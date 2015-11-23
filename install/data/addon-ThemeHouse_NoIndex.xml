@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<addon addon_id="ThemeHouse_NoIndex" title="[⌂] No Search Indexing" version_string="1.0.0a" version_id="1447261019" url="http://xf.themehouse.io/" install_callback_class="ThemeHouse_Install" install_callback_method="install" uninstall_callback_class="ThemeHouse_Install" uninstall_callback_method="uninstall">
+  <admin_navigation/>
+  <admin_permissions/>
+  <admin_style_properties/>
+  <admin_templates/>
+  <admin_template_modifications/>
+  <code_events/>
+  <code_event_listeners>
+    <listener event_id="controller_pre_dispatch" execute_order="10" callback_class="ThemeHouse_Listener_ControllerPreDispatch" callback_method="controllerPreDispatch" active="1" hint="" description=""/>
+    <listener event_id="file_health_check" execute_order="10" callback_class="ThemeHouse_NoIndex_Listener_FileHealthCheck" callback_method="fileHealthCheck" active="1" hint="" description=""/>
+    <listener event_id="init_dependencies" execute_order="10" callback_class="ThemeHouse_Listener_InitDependencies" callback_method="initDependencies" active="1" hint="" description=""/>
+    <listener event_id="load_class" execute_order="10" callback_class="ThemeHouse_NoIndex_Listener_LoadClass" callback_method="loadClassSitemap" active="0" hint="XenForo_SitemapHandler_Thread" description="XenForo_SitemapHandler_Thread (For XenForo 1.2 and above)" compatibility_switch="1"/>
+    <listener event_id="load_class_sitemap" execute_order="10" callback_class="ThemeHouse_NoIndex_Listener_LoadClass" callback_method="loadClassSitemap" active="1" hint="" description="(For XenForo 1.1 and below)" compatibility_switch="1"/>
+  </code_event_listeners>
+  <cron/>
+  <email_templates/>
+  <email_template_modifications/>
+  <optiongroups>
+    <group group_id="th_noIndex" display_order="2000" debug_only="0"/>
+    <option option_id="th_noIndex_googleOnly" edit_format="onoff" data_type="boolean" can_backup="1">
+      <default_value>0</default_value>
+      <edit_format_params/>
+      <sub_options/>
+      <relation group_id="th_noIndex" display_order="100"/>
+    </option>
+    <option option_id="th_noIndex_threadDays" edit_format="spinbox" data_type="positive_integer" can_backup="1">
+      <default_value>1000</default_value>
+      <edit_format_params/>
+      <sub_options/>
+      <relation group_id="th_noIndex" display_order="1"/>
+    </option>
+  </optiongroups>
+  <permissions>
+    <permission_groups/>
+    <permissions/>
+    <interface_groups/>
+  </permissions>
+  <phrases>
+    <phrase title="option_group_th_noIndex" version_id="1417431084" version_string="1.0.0"><![CDATA[No Search Indexing by ThemeHouse]]></phrase>
+    <phrase title="option_group_th_noIndex_description" version_id="1417431084" version_string="1.0.0"><![CDATA[Options for the No Search Indexing by ThemeHouse add-on.]]></phrase>
+    <phrase title="option_th_noIndex_googleOnly" version_id="1417431084" version_string="1.0.0"><![CDATA[Apply to Google only]]></phrase>
+    <phrase title="option_th_noIndex_googleOnly_explain" version_id="1417431084" version_string="1.0.0"><![CDATA[Enabling this option will result in a "googlebot" meta tag being used instead of a "robots" meta tag so that the above options are applied to the Google search index only. Selecting this option will also mean that the thread is not removed from the sitemap.]]></phrase>
+    <phrase title="option_th_noIndex_threadDays" version_id="1417431084" version_string="1.0.0"><![CDATA[Thread Index Limit (Days)]]></phrase>
+    <phrase title="option_th_noIndex_threadDays_explain" version_id="1417431084" version_string="1.0.0"><![CDATA[Threads older than this will have a "noindex" meta tag added to the page, which will stop most search engines from including it in their search results.]]></phrase>
+  </phrases>
+  <route_prefixes/>
+  <style_properties/>
+  <templates/>
+  <public_template_modifications>
+    <modification template="footer" modification_key="th_copyrightNotice_noIndex" description="Copyright notice for [⌂] No Search Indexing" execution_order="1" enabled="1" action="callback">
+      <find><![CDATA[/{xen:phrase (?:xenforo|extra)_copyright}/]]></find>
+      <replace><![CDATA[ThemeHouse_Listener_InitDependencies::copyrightNotice]]></replace>
+    </modification>
+    <modification template="thread_view" modification_key="th_threadView_noIndex" description="Adds meta tags to threads." execution_order="10" enabled="1" action="preg_replace">
+      <find><![CDATA[#<xen:container var="\$head\.canonical">#s]]></find>
+      <replace><![CDATA[<xen:if is="{$thread.post_date} < {xen:calc '{$serverTime} - ({$xenOptions.th_noIndex_threadDays} * 24 * 60 * 60)'}">
+	<xen:container var="$head.noindex">
+		<meta name="{xen:if {$xenOptions.th_noIndex_googleOnly}, 'googlebot', 'robots'}" content="noindex" /></xen:container>
+</xen:if>
+${0}]]></replace>
+    </modification>
+  </public_template_modifications>
+  <bb_code_media_sites/>
+  <bb_codes/>
+</addon>
